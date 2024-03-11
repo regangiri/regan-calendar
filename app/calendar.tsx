@@ -70,9 +70,25 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const renderDays = (): JSX.Element[] => {
     const dayCells: JSX.Element[] = [];
+    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
+    // Render day names row
+    const dayNameRow = dayNames.map((dayName, index) => (
+      <div
+        key={dayName}
+        className={`day ${index === 0 ? 'empty' : ''} day-name`}
+      >
+        {dayName}
+      </div>
+    ));
+    dayCells.push(...dayNameRow);
+
+    // Render empty cells for days before the first day of the month
     for (let i = 0; i < firstDayOfMonth; i++) {
       dayCells.push(<div key={`empty-${i}`} className="day empty"></div>);
     }
+
+    // Render days
     for (let i = 1; i <= days; i++) {
       const date = new Date(
         currentDate.getFullYear(),
@@ -89,26 +105,46 @@ const Calendar: React.FC<CalendarProps> = ({
         (!selectedEndDate &&
           selectedStartDate &&
           date.getTime() === selectedStartDate.getTime());
-      const classNames = `day ${isSelected ? 'selected' : ''} ${
-        isInRange ? 'in-range' : ''
-      }`;
+
       dayCells.push(
-        <div key={i} className={classNames} onClick={() => handleDateClick(i)}>
+        <div
+          key={i}
+          className={`flex items-center justify-center py-1  rounded-full  ${
+            isSelected ? 'bg-[#003366] text-white' : ''
+          }`}
+          onClick={() => handleDateClick(i)}
+        >
           {i}
         </div>
       );
     }
+
     return dayCells;
   };
 
   return (
-    <div className="calendar">
-      <div className="calendar-header">
-        <button onClick={handlePrevMonth}>{'<'}</button>
-        <h3>{`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`}</h3>
-        <button onClick={handleNextMonth}>{'>'}</button>
+    <div className="calendar flex justify-center items-center w-full flex-col">
+      <div className="calendar-header flex items-center justify-center gap-6">
+        <button
+          className="py-1 px-2 bg-slate-600 text-white font-bold rounded-md my-6"
+          onClick={handlePrevMonth}
+        >
+          {'<'}
+        </button>
+        <h3>{`${currentDate.getFullYear()} - ${currentDate.toLocaleString(
+          'default',
+          { month: 'long' }
+        )}`}</h3>
+        <button
+          className="py-1 px-2 bg-slate-600 text-white font-bold rounded-md my-6"
+          onClick={handleNextMonth}
+        >
+          {'>'}
+        </button>
       </div>
-      <div className="calendar-grid grid grid-cols-7 gap-1">{renderDays()}</div>
+      <div className="calendar-grid grid grid-cols-7 gap-y-2 gap-x-36">
+        {renderDays()}
+      </div>
     </div>
   );
 };
